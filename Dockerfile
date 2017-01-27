@@ -1,4 +1,7 @@
 FROM gliderlabs/alpine:3.3
 
-RUN apk add openssl ca-certificates \
+RUN apk update \
+  && apk upgrade \
+  && apk add openssl \
+  && apk add ca-certificates \
   && rm -rf /var/cache/apk/*
