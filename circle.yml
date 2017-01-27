@@ -1,0 +1,18 @@
+machine:
+    services:
+        - docker
+
+dependencies:
+    override:
+        - docker info
+
+test:
+    override:
+        - docker build --rm=false -t registry.giantswarm.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+
+deployment:
+    master:
+        branch: master
+        commands:
+            - docker login --email=$DOCKER_EMAIL --username=$DOCKER_USERNAME --password="$DOCKER_PASSWORD" registry.giantswarm.io
+            - docker push registry.giantswarm.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
