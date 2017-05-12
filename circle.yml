@@ -1,18 +1,20 @@
 machine:
-    services:
-        - docker
+  services:
+    - docker
 
 dependencies:
-    override:
-        - docker info
+  override:
+    - |
+      wget -q $(curl -sS -H "Authorization: token $RELEASE_TOKEN" https://api.github.com/repos/giantswarm/architect/releases/latest | grep browser_download_url | head -n 1 | cut -d '"' -f 4)
+    - chmod +x ./architect
+    - ./architect version
 
 test:
-    override:
-        - docker build --rm=false -t registry.giantswarm.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+  override:
+    - ./architect build
 
 deployment:
-    master:
-        branch: master
-        commands:
-            - docker login --email=$DOCKER_EMAIL --username=$DOCKER_USERNAME --password="$DOCKER_PASSWORD" registry.giantswarm.io
-            - docker push registry.giantswarm.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
+  master:
+    branch: master
+    commands:
+      - ./architect deploy
